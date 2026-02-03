@@ -21,7 +21,6 @@ import {
   Divider,
   Tooltip,
   ClickAwayListener,
-  Fade,
   useTheme,
   alpha,
 } from '@mui/material';
@@ -33,7 +32,6 @@ import {
   LightMode,
   Person,
   Description,
-  Folder,
   NavigateNext,
   Call,
   Message,
@@ -44,7 +42,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme as useCustomTheme } from '../../theme/ThemeProvider';
-import api from '../../services/api';
 
 const MotionPaper = motion(Paper);
 
@@ -127,7 +124,6 @@ const Navbar = ({ onMenuClick, collapsed }) => {
 
       setSearchResults(mockResults);
     } catch (error) {
-      console.error('Search error:', error);
       setSearchResults([]);
     } finally {
       setSearching(false);

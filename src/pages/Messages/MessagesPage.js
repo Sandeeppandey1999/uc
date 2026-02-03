@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Box,
-  Grid,
   Card,
   CardContent,
   Typography,
@@ -15,11 +14,9 @@ import {
   ListItemText,
   ListItemButton,
   IconButton,
-  Divider,
   Paper,
   Stack,
   Chip,
-  Button,
   Menu,
   MenuItem,
   useTheme,
@@ -33,8 +30,6 @@ import {
   Phone as PhoneIcon,
   VideoCall as VideoCallIcon,
   EmojiEmotions as EmojiIcon,
-  Image as ImageIcon,
-  InsertDriveFile as FileIcon,
   Check as CheckIcon,
   DoneAll as DoneAllIcon,
 } from '@mui/icons-material';
@@ -157,7 +152,7 @@ const MessagesPage = () => {
     // });
     // setConversations(response.data);
     setConversations(mockConversations);
-  }, [searchTerm]);
+  }, []);
 
   useEffect(() => {
     fetchConversations();
@@ -249,13 +244,11 @@ const MessagesPage = () => {
   // Handle file attachment
   const handleFileAttach = useCallback(() => {
     // TODO: Implement file upload
-    console.log('File attach clicked');
   }, []);
 
   // Handle emoji
   const handleEmojiClick = useCallback(() => {
     // TODO: Implement emoji picker
-    console.log('Emoji clicked');
   }, []);
 
   // Handle menu

@@ -105,7 +105,6 @@ const ConferenceSettingsPage = () => {
         });
       }
     } catch (err) {
-      console.error('Load conference settings error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message || 'Failed to load conference settings',
@@ -159,7 +158,6 @@ const ConferenceSettingsPage = () => {
         loadConferenceSettings();
       }, 1000);
     } catch (err) {
-      console.error('Update conference settings error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message + ' ' + err.response?.data?.messageDetail || 'Failed to update conference settings',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -116,7 +116,7 @@ const ChangePassword = () => {
     setLoading(true);
 
     try {
-      const response = await AuthenticationService.changePassword({
+        await AuthenticationService.changePassword({
         username: username,
         oldPassword: oldPassword, // Use old password from login
         newPassword: formData.newPassword,
@@ -133,7 +133,6 @@ const ChangePassword = () => {
         navigate('/login', { replace: true });
       }, 2000);
     } catch (err) {
-      console.error('Change password error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message || 'Failed to change password. Please try again.',

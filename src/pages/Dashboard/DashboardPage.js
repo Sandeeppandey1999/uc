@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -23,12 +23,10 @@ import {
   Call,
   Message,
   People,
-  MoreVert,
   PhoneInTalk,
   PhoneMissed,
   PhoneForwarded,
   PhoneCallback,
-  Schedule,
   Notifications,
   Speed,
   Assessment,
@@ -50,17 +48,17 @@ const DashboardPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const fullName = AuthenticationService.getFullName();
-  const [stats, setStats] = useState({
+  const stats = {
     totalCalls: 145,
     missedCalls: 12,
     dialedCalls: 89,
     receivedCalls: 56,
     messages: 34,
     contacts: 89,
-  });
+  };
 
-  const [selectedDate, setSelectedDate] = useState(new Date(2026, 1, 3)); // Feb 3, 2026
-  const [meetings, setMeetings] = useState(getTodaysMeetings());
+  const selectedDate = new Date(2026, 1, 3); // Feb 3, 2026
+  const meetings = getTodaysMeetings();
 
   useEffect(() => {
     // Subscribe to real-time updates
@@ -68,7 +66,6 @@ const DashboardPage = () => {
       'dashboard-stats',
       'all',
       (data) => {
-        console.log('Dashboard update:', data);
         // Update stats based on WebSocket data
       }
     );

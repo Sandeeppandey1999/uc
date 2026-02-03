@@ -34,17 +34,14 @@ class WebSocketService {
       },
       webSocketFactory: () => new SockJS(config.webSocket.services),
       onConnect: () => {
-        console.log('[WS Services] Connected');
         this.servicesClient.subscribe(
           `/app/v2/messaging/topic/user-${username}`,
           this.onServiceMessage.bind(this)
         );
       },
       onDisconnect: () => {
-        console.log('[WS Services] Disconnected');
       },
       onStompError: (frame) => {
-        console.error('[WS Services] Error:', frame);
       },
     });
 
@@ -62,17 +59,14 @@ class WebSocketService {
       },
       webSocketFactory: () => new SockJS(config.webSocket.telemetry),
       onConnect: () => {
-        console.log('[WS Telemetry] Connected');
         this.telemetryClient.subscribe(
           `/app/v2/messaging/topic/user-${username}`,
           this.onTelemetryMessage.bind(this)
         );
       },
       onDisconnect: () => {
-        console.log('[WS Telemetry] Disconnected');
       },
       onStompError: (frame) => {
-        console.error('[WS Telemetry] Error:', frame);
       },
     });
 
@@ -94,8 +88,6 @@ class WebSocketService {
   }
 
   onServiceMessage(message) {
-    console.log('[WS Services] Message received:', message.headers.destination);
-    
     try {
       const data = JSON.parse(message.body);
       
@@ -105,13 +97,10 @@ class WebSocketService {
         }
       });
     } catch (error) {
-      console.error('[WS Services] Error parsing message:', error);
     }
   }
 
   onTelemetryMessage(message) {
-    console.log('[WS Telemetry] Message received:', message.headers.destination);
-    
     try {
       const data = JSON.parse(message.body);
       
@@ -121,7 +110,6 @@ class WebSocketService {
         }
       });
     } catch (error) {
-      console.error('[WS Telemetry] Error parsing message:', error);
     }
   }
 
@@ -155,8 +143,6 @@ class WebSocketService {
         destination,
         body: JSON.stringify(body),
       });
-    } else {
-      console.error('[WS Services] Not connected');
     }
   }
 
@@ -166,8 +152,6 @@ class WebSocketService {
         destination,
         body: JSON.stringify(body),
       });
-    } else {
-      console.error('[WS Telemetry] Not connected');
     }
   }
 }

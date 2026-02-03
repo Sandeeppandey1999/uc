@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Paper,
   TextField,
   Button,
   Typography,
@@ -125,7 +124,6 @@ const ChangePasswordPage = () => {
         navigate('/login', { replace: true });
       }, 2000);
     } catch (err) {
-      console.error('Change password error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message || err.response?.data?.messageDetail || 'Failed to change password. Please try again.',

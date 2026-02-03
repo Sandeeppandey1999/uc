@@ -17,7 +17,6 @@ import {
   Pagination,
   CircularProgress,
   Tooltip,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
@@ -30,13 +29,10 @@ import {
   CallMade,
   CallReceived,
   CallMissed,
-  Videocam,
   Message,
-  Delete,
   Info,
   AccessTime,
   Phone,
-  ArrowForward,
   PhoneMissed,
   Schedule,
 } from '@mui/icons-material';
@@ -59,14 +55,6 @@ const CallsPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
   const pageSize = 20;
-
-  // Stats
-  const [stats, setStats] = useState({
-    totalCalls: 0,
-    missedCalls: 0,
-    incomingCalls: 0,
-    outgoingCalls: 0,
-  });
 
   // Debounce search term
   useEffect(() => {
@@ -108,21 +96,8 @@ const CallsPage = () => {
         setCalls(callData);
         setTotalPages(response.data.data.totalPages);
         setTotalRecords(response.data.data.totalRecords);
-
-        // Calculate stats
-        const missed = callData.filter((call) => call.isMissed).length;
-        const incoming = callData.filter((call) => call.callDirection === 'IN').length;
-        const outgoing = callData.filter((call) => call.callDirection === 'OUT').length;
-
-        setStats({
-          totalCalls: callData.length,
-          missedCalls: missed,
-          incomingCalls: incoming,
-          outgoingCalls: outgoing,
-        });
       }
     } catch (error) {
-      console.error('Error fetching calls:', error);
       setCalls([]);
     } finally {
       setLoading(false);

@@ -108,7 +108,6 @@ const ContactsPage = () => {
         setTotalRecords(response.data.data.totalRecords);
       }
     } catch (error) {
-      console.error('Error fetching contacts:', error);
       setContacts([]);
     } finally {
       setLoading(false);

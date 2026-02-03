@@ -13,8 +13,6 @@ import ConferenceSettingsPage from './pages/Settings/ConferenceSettingsPage';
 import ContactsPage from './pages/Contacts/ContactsPage';
 import CallsPage from './pages/Calls/CallsPage';
 import MessagesPage from './pages/Messages/MessagesPage';
-import ConferencePage from './pages/Conference/ConferencePage';
-import ConferenceCalendarPage from './pages/Conference/ConferenceCalendarPage';
 import './App.css';
 
 function App() {
@@ -42,8 +40,6 @@ function App() {
             <Route path="calls/recent" element={<CallsPage />} />
             <Route path="calls/history" element={<CallsPage />} />
             <Route path="contacts" element={<ContactsPage />} />
-            <Route path="conference" element={<ConferencePage />} />
-            <Route path="conference-calendar" element={<ConferenceCalendarPage />} />
             <Route path="settings" element={<div>Settings Page (Coming Soon)</div>} />
             <Route path="settings/profile" element={<AccountProfilePage />} />
             <Route path="settings/change-password" element={<ChangePasswordPage />} />

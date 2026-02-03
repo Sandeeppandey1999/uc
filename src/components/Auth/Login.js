@@ -111,8 +111,6 @@ const Login = () => {
         }, 1000);
       }
     } catch (err) {
-      console.error('Login error:', err);
-      
       // Check for password change required in error response (HTTP 400)
       if (err.response?.status === 400 && 
           err.response?.data?.data?.requiredChangePassword) {

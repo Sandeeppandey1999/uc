@@ -10,10 +10,8 @@ import {
   Grid,
   Switch,
   FormControlLabel,
-  Divider,
   LinearProgress,
   useTheme,
-  Alert,
   Paper,
   Avatar,
   Chip,
@@ -198,7 +196,6 @@ const AccountProfilePage = () => {
         setFormData(profileData);
       }
     } catch (err) {
-      console.error('Load profile error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message || 'Failed to load profile data',
@@ -214,12 +211,6 @@ const AccountProfilePage = () => {
     
     // Handle cascading logic for Local, STD, ISD switches
     if (type === 'checkbox' && (name === 'dialLocal' || name === 'dialSTD' || name === 'dialISD')) {
-      console.log('Before change:', name, 'checked:', checked, 'current state:', {
-        dialLocal: formData.dialLocal,
-        dialSTD: formData.dialSTD,
-        dialISD: formData.dialISD
-      });
-      
       let updatedFormData = { ...formData };
       
       if (name === 'dialLocal') {
@@ -253,12 +244,6 @@ const AccountProfilePage = () => {
           updatedFormData.dialISD = false;
         }
       }
-      
-      console.log('After change:', {
-        dialLocal: updatedFormData.dialLocal,
-        dialSTD: updatedFormData.dialSTD,
-        dialISD: updatedFormData.dialISD
-      });
       
       setFormData(updatedFormData);
     } else {
@@ -325,7 +310,6 @@ const AccountProfilePage = () => {
         loadProfileData();
       }, 1000);
     } catch (err) {
-      console.error('Update profile error:', err);
       setNotify({
         isOpen: true,
         message: err.response?.data?.message || 'Failed to update profile',

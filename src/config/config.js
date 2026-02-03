@@ -1,6 +1,5 @@
 const getVariables = () => {
   if (process.env.REACT_APP_API_BASE_URL) {
-    console.log('✅ Using environment variables from .env file');
     return {
       api: {
         services: process.env.REACT_APP_API_BASE_URL,

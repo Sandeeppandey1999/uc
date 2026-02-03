@@ -4,8 +4,6 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 
-const DRAWER_WIDTH = 280;
-const DRAWER_WIDTH_COLLAPSED = 72;
 
 const DashboardLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);

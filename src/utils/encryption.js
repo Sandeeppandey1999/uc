@@ -49,7 +49,6 @@ export const decryptData = (encryptedData, secretKey = config.application.secret
     );
     return decrypted.toString(CryptoJS.enc.Utf8);
   } catch (error) {
-    console.error('Decryption failed:', error);
     return null;
   }
 };
