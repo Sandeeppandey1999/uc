@@ -65,10 +65,6 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
       icon: <Call />,
       path: '/calls',
       roles: [],
-      children: [
-        { title: 'Recent Calls', path: '/calls/recent' },
-        { title: 'Call History', path: '/calls/history' },
-      ],
     },
     {
       title: 'Contacts',
@@ -81,10 +77,6 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
       icon: <VideoCall />,
       path: '/conference',
       roles: [],
-      children: [
-        { title: 'Meetings', path: '/conference' },
-        { title: 'Calendar', path: '/conference-calendar' },
-      ],
     },
     {
       title: 'Settings',
