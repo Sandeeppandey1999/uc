@@ -21,7 +21,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  ListItemSecondaryAction,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 import {
   Search,
@@ -35,6 +40,7 @@ import {
   Phone,
   PhoneMissed,
   Schedule,
+  FilterList,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -51,10 +57,20 @@ const CallsPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('ucDialedTo'); // Default search field
+  const [callDirectionFilter, setCallDirectionFilter] = useState('ALL'); // ALL, IN, OUT
+  const [missedFilter, setMissedFilter] = useState('ALL'); // ALL, MISSED, NOT_MISSED
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [totalRecords, setTotalRecords] = useState(0);
   const pageSize = 20;
+
+  // Search field options
+  const searchFieldOptions = [
+    { value: 'ucDialedTo', label: 'Phone Number' },
+    { value: 'ucNumber', label: 'UC Number' },
+    { value: 'ucUserId', label: 'User ID' },
+  ];
 
   // Debounce search term
   useEffect(() => {
@@ -67,6 +83,26 @@ const CallsPage = () => {
       clearTimeout(timer);
     };
   }, [searchTerm]);
+
+  // Filtered calls based on local filters
+  const filteredCalls = useMemo(() => {
+    return calls.filter(call => {
+      // Filter by call direction
+      if (callDirectionFilter !== 'ALL' && call.callDirection !== callDirectionFilter) {
+        return false;
+      }
+      
+      // Filter by missed calls
+      if (missedFilter === 'MISSED' && !call.isMissed) {
+        return false;
+      }
+      if (missedFilter === 'NOT_MISSED' && call.isMissed) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [calls, callDirectionFilter, missedFilter]);
 
   const fetchCalls = useCallback(async () => {
     setLoading(true);
@@ -110,6 +146,23 @@ const CallsPage = () => {
 
   const handleSearchChange = useCallback((event) => {
     setSearchTerm(event.target.value);
+  }, []);
+
+  const handleSearchFieldChange = useCallback((event) => {
+    setSearchField(event.target.value);
+    setCurrentPage(0);
+  }, []);
+
+  const handleCallDirectionChange = useCallback((event, newValue) => {
+    if (newValue !== null) {
+      setCallDirectionFilter(newValue);
+    }
+  }, []);
+
+  const handleMissedFilterChange = useCallback((event, newValue) => {
+    if (newValue !== null) {
+      setMissedFilter(newValue);
+    }
   }, []);
 
   const handlePageChange = useCallback((event, value) => {
@@ -200,26 +253,26 @@ const CallsPage = () => {
     },
     {
       title: 'Missed Calls',
-      value: calls.filter(c => c.isMissed).length,
+      value: filteredCalls.filter(c => c.isMissed).length,
       icon: <PhoneMissed />,
       color: theme.palette.error.main,
       bgGradient: `linear-gradient(135deg, ${theme.palette.error.main}, ${theme.palette.error.dark})`,
     },
     {
       title: 'Incoming',
-      value: calls.filter(c => c.callDirection === 'IN').length,
+      value: filteredCalls.filter(c => c.callDirection === 'IN').length,
       icon: <CallReceived />,
       color: theme.palette.success.main,
       bgGradient: `linear-gradient(135deg, ${theme.palette.success.main}, ${theme.palette.success.dark})`,
     },
     {
       title: 'Outgoing',
-      value: calls.filter(c => c.callDirection === 'OUT').length,
+      value: filteredCalls.filter(c => c.callDirection === 'OUT').length,
       icon: <CallMade />,
       color: theme.palette.info.main,
       bgGradient: `linear-gradient(135deg, ${theme.palette.info.main}, ${theme.palette.info.dark})`,
     },
-  ], [calls, totalRecords, theme.palette]);
+  ], [filteredCalls, totalRecords, theme.palette]);
 
   return (
     <Box
@@ -343,7 +396,7 @@ const CallsPage = () => {
           ))}
         </Grid>
 
-        {/* Search Bar */}
+        {/* Search Bar with Filters */}
         <MotionBox
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -358,24 +411,180 @@ const CallsPage = () => {
               border: `1px solid ${theme.palette.divider}`,
             }}
           >
-            <TextField
-              fullWidth
-              placeholder="Search by number or user ID..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                },
-              }}
-            />
+            <Stack spacing={3}>
+              {/* Search Field Selector and Input */}
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="stretch">
+                {/* Search Field Selector */}
+                <FormControl sx={{ minWidth: { xs: '100%', sm: 200 } }}>
+                  <InputLabel id="search-field-label">Search By</InputLabel>
+                  <Select
+                    labelId="search-field-label"
+                    value={searchField}
+                    label="Search By"
+                    onChange={handleSearchFieldChange}
+                    sx={{
+                      borderRadius: 2,
+                      background: theme.palette.mode === 'dark' 
+                        ? alpha(theme.palette.primary.main, 0.1) 
+                        : alpha(theme.palette.primary.main, 0.05),
+                    }}
+                  >
+                    {searchFieldOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {/* Search Input */}
+                <TextField
+                  fullWidth
+                  placeholder={`Search by ${searchFieldOptions.find(opt => opt.value === searchField)?.label.toLowerCase()}...`}
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Search />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    flex: 1,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                    },
+                  }}
+                />
+              </Stack>
+
+              {/* Filter Buttons */}
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ xs: 'stretch', md: 'center' }}>
+                {/* Call Direction Filter */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
+                    Call Direction
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={callDirectionFilter}
+                    exclusive
+                    onChange={handleCallDirectionChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiToggleButton-root': {
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        '&.Mui-selected': {
+                          background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`,
+                          color: 'white',
+                          '&:hover': {
+                            background: `linear-gradient(135deg, ${theme.palette.primary.dark}, ${theme.palette.primary.main})`,
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <ToggleButton value="ALL">
+                      <Call sx={{ mr: 1, fontSize: 20 }} />
+                      All
+                    </ToggleButton>
+                    <ToggleButton value="IN">
+                      <CallReceived sx={{ mr: 1, fontSize: 20 }} />
+                      Incoming
+                    </ToggleButton>
+                    <ToggleButton value="OUT">
+                      <CallMade sx={{ mr: 1, fontSize: 20 }} />
+                      Outgoing
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
+
+                {/* Missed Call Filter */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
+                    Call Status
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={missedFilter}
+                    exclusive
+                    onChange={handleMissedFilterChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiToggleButton-root': {
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        '&.Mui-selected': {
+                          background: `linear-gradient(135deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`,
+                          color: 'white',
+                          '&:hover': {
+                            background: `linear-gradient(135deg, ${theme.palette.secondary.dark}, ${theme.palette.secondary.main})`,
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <ToggleButton value="ALL">
+                      <FilterList sx={{ mr: 1, fontSize: 20 }} />
+                      All
+                    </ToggleButton>
+                    <ToggleButton value="MISSED">
+                      <CallMissed sx={{ mr: 1, fontSize: 20 }} />
+                      Missed
+                    </ToggleButton>
+                    <ToggleButton value="NOT_MISSED">
+                      <Phone sx={{ mr: 1, fontSize: 20 }} />
+                      Connected
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
+              </Stack>
+
+              {/* Active Filters Summary */}
+              {(callDirectionFilter !== 'ALL' || missedFilter !== 'ALL' || searchTerm) && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                    Active Filters:
+                  </Typography>
+                  {callDirectionFilter !== 'ALL' && (
+                    <Chip
+                      label={`Direction: ${callDirectionFilter}`}
+                      onDelete={() => setCallDirectionFilter('ALL')}
+                      size="small"
+                      color="primary"
+                    />
+                  )}
+                  {missedFilter !== 'ALL' && (
+                    <Chip
+                      label={`Status: ${missedFilter === 'MISSED' ? 'Missed' : 'Connected'}`}
+                      onDelete={() => setMissedFilter('ALL')}
+                      size="small"
+                      color="secondary"
+                    />
+                  )}
+                  {searchTerm && (
+                    <Chip
+                      label={`Search: "${searchTerm}"`}
+                      onDelete={() => setSearchTerm('')}
+                      size="small"
+                    />
+                  )}
+                  <Chip
+                    label="Clear All"
+                    onClick={() => {
+                      setCallDirectionFilter('ALL');
+                      setMissedFilter('ALL');
+                      setSearchTerm('');
+                    }}
+                    size="small"
+                    variant="outlined"
+                    sx={{ ml: 'auto' }}
+                  />
+                </Box>
+              )}
+            </Stack>
           </Paper>
         </MotionBox>
 
@@ -389,7 +598,7 @@ const CallsPage = () => {
               </Typography>
             </Stack>
           </Box>
-        ) : calls.length === 0 ? (
+        ) : filteredCalls.length === 0 ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <Paper
               elevation={0}
@@ -405,12 +614,32 @@ const CallsPage = () => {
                 No calls found
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {searchTerm ? 'Try a different search term' : 'No call history available'}
+                {searchTerm || callDirectionFilter !== 'ALL' || missedFilter !== 'ALL' 
+                  ? 'Try adjusting your filters or search term' 
+                  : 'No call history available'}
               </Typography>
             </Paper>
           </Box>
         ) : (
           <>
+            {/* Filtered Results Summary */}
+            {(callDirectionFilter !== 'ALL' || missedFilter !== 'ALL') && (
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  borderRadius: 2,
+                  background: alpha(theme.palette.info.main, 0.1),
+                  border: `1px solid ${alpha(theme.palette.info.main, 0.3)}`,
+                }}
+              >
+                <Typography variant="body2" color="info.main" fontWeight={600}>
+                  Showing {filteredCalls.length} of {calls.length} calls based on current filters
+                </Typography>
+              </Paper>
+            )}
+
             {/* Calls List */}
             <MotionCard
               initial={{ opacity: 0, y: 20 }}
@@ -429,118 +658,153 @@ const CallsPage = () => {
                 animate="show"
                 sx={{ p: 0 }}
               >
-                {calls.map((call, index) => (
+                {filteredCalls.map((call, index) => (
                   <MotionListItem
                     key={call.id}
                     variants={itemVariants}
                     sx={{
-                      py: 2,
-                      px: 3,
-                      borderBottom: index < calls.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
+                      py: 1.5,
+                      px: 2.5,
+                      borderBottom: index < filteredCalls.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
                       transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 3,
+                      minHeight: 70,
                       '&:hover': {
                         bgcolor: alpha(getCallColor(call), 0.05),
                       },
                     }}
                   >
-                    <ListItemAvatar>
+                    {/* Left: Avatar + Phone Number */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: 280, minWidth: 280 }}>
                       <Avatar
                         sx={{
-                          background: `linear-gradient(135deg, ${getCallColor(call)}, ${alpha(getCallColor(call), 0.7)})`,
-                          width: 48,
-                          height: 48,
+                          background: `linear-gradient(135deg, ${getCallColor(call)}, ${alpha(getCallColor(call), 0.8)})`,
+                          width: 42,
+                          height: 42,
+                          boxShadow: `0 2px 8px ${alpha(getCallColor(call), 0.3)}`,
                         }}
                       >
-                        {getCallIcon(call)}
+                        {React.cloneElement(getCallIcon(call), { 
+                          sx: { color: '#ffffff', fontSize: 22 } 
+                        })}
                       </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                          <Typography variant="h6" fontWeight={600}>
-                            {call.ucDialedTo}
-                          </Typography>
-                          <Chip
-                            label={getCallTypeLabel(call)}
-                            size="small"
-                            sx={{
-                              bgcolor: alpha(getCallColor(call), 0.1),
-                              color: getCallColor(call),
-                              fontWeight: 600,
-                              fontSize: 11,
-                            }}
-                          />
-                        </Box>
-                      }
-                      secondary={
-                        <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Phone sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {call.ucNumber}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <AccessTime sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {formatDuration(call.callDuration)}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Schedule sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {formatDateTime(call.callReceivedOn)}
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      }
-                    />
-                    <ListItemSecondaryAction>
-                      <Stack direction="row" spacing={1}>
-                        <Tooltip title="Call Back">
-                          <IconButton
-                            size="small"
-                            sx={{
-                              bgcolor: alpha(theme.palette.success.main, 0.1),
-                              color: theme.palette.success.main,
-                              '&:hover': {
-                                bgcolor: alpha(theme.palette.success.main, 0.2),
-                              },
-                            }}
-                          >
-                            <Call fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Message">
-                          <IconButton
-                            size="small"
-                            sx={{
-                              bgcolor: alpha(theme.palette.info.main, 0.1),
-                              color: theme.palette.info.main,
-                              '&:hover': {
-                                bgcolor: alpha(theme.palette.info.main, 0.2),
-                              },
-                            }}
-                          >
-                            <Message fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Details">
-                          <IconButton
-                            size="small"
-                            sx={{
-                              bgcolor: alpha(theme.palette.text.secondary, 0.05),
-                              color: 'text.secondary',
-                              '&:hover': {
-                                bgcolor: alpha(theme.palette.text.secondary, 0.1),
-                              },
-                            }}
-                          >
-                            <Info fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Stack>
-                    </ListItemSecondaryAction>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography 
+                          variant="h6" 
+                          fontWeight={700}
+                          color="text.primary"
+                          noWrap
+                        >
+                          {call.ucDialedTo || 'Unknown'}
+                        </Typography>
+                        <Typography 
+                          variant="body2" 
+                          fontWeight={500}
+                          color="text.secondary"
+                          sx={{ mt: 0.25 }}
+                        >
+                          UC: {call.ucNumber}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Center: Duration & Date Time */}
+                    <Stack 
+                      direction="row" 
+                      spacing={3} 
+                      alignItems="center" 
+                      sx={{ 
+                        width: 350,
+                        minWidth: 350,
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <AccessTime 
+                          sx={{ 
+                            fontSize: 16, 
+                            color: 'text.secondary',
+                          }} 
+                        />
+                        <Typography 
+                          variant="body2"
+                          fontWeight={600}
+                          color="text.primary"
+                        >
+                          {formatDuration(call.callDuration)}
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Schedule 
+                          sx={{ 
+                            fontSize: 16, 
+                            color: 'text.secondary',
+                          }} 
+                        />
+                        <Typography 
+                          variant="body2"
+                          fontWeight={600}
+                          color="text.primary"
+                        >
+                          {formatDateTime(call.callReceivedOn)}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    {/* Right: Action Buttons */}
+                    <Stack direction="row" spacing={1} sx={{ width: 120, minWidth: 120, justifyContent: 'flex-end' }}>
+                      <Tooltip title="Call Back">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            bgcolor: alpha(theme.palette.success.main, 0.1),
+                            color: theme.palette.success.main,
+                            '&:hover': {
+                              bgcolor: alpha(theme.palette.success.main, 0.2),
+                            },
+                          }}
+                        >
+                          <Call sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Message">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            bgcolor: alpha(theme.palette.info.main, 0.1),
+                            color: theme.palette.info.main,
+                            '&:hover': {
+                              bgcolor: alpha(theme.palette.info.main, 0.2),
+                            },
+                          }}
+                        >
+                          <Message sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Details">
+                        <IconButton
+                          size="small"
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            bgcolor: alpha(theme.palette.text.secondary, 0.05),
+                            color: 'text.secondary',
+                            '&:hover': {
+                              bgcolor: alpha(theme.palette.text.secondary, 0.1),
+                            },
+                          }}
+                        >
+                          <Info sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
                   </MotionListItem>
                 ))}
               </List>

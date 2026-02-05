@@ -12,7 +12,6 @@ import {
   Divider,
   IconButton,
   Collapse,
-  Stack,
   Chip,
   useTheme,
   Tooltip,
@@ -29,6 +28,9 @@ import {
   ChevronLeft,
   ChevronRight,
   VideoCall,
+  Fax,
+  Campaign,
+  Voicemail,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationService from '../../services/AuthenticationService';
@@ -76,6 +78,25 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
       title: 'Conference',
       icon: <VideoCall />,
       path: '/conference',
+      roles: [],
+    },
+    {
+      title: 'Fax',
+      icon: <Fax />,
+      path: '/fax',
+      roles: [],
+    },
+    {
+      title: 'Voicemail',
+      icon: <Voicemail />,
+      path: '/voicemail',
+      roles: [],
+      badge: 3,
+    },
+    {
+      title: 'Broadcasts',
+      icon: <Campaign />,
+      path: '/broadcasts',
       roles: [],
     },
     {

@@ -14,6 +14,9 @@ import ContactsPage from './pages/Contacts/ContactsPage';
 import CallsPage from './pages/Calls/CallsPage';
 import MessagesPage from './pages/Messages/MessagesPage';
 import ConferencePage from './pages/Conference/ConferencePage';
+import FaxPage from './pages/Fax/FaxPage';
+import BroadcastsPage from './pages/Broadcasts/BroadcastsPage';
+import VoicemailPage from './pages/Voicemail/VoicemailPage';
 import './App.css';
 
 function App() {
@@ -42,6 +45,9 @@ function App() {
             <Route path="calls/history" element={<CallsPage />} />
             <Route path="contacts" element={<ContactsPage />} />
             <Route path="conference" element={<ConferencePage />} />
+            <Route path="fax" element={<FaxPage />} />
+            <Route path="voicemail" element={<VoicemailPage />} />
+            <Route path="broadcasts" element={<BroadcastsPage />} />
             <Route path="settings" element={<div>Settings Page (Coming Soon)</div>} />
             <Route path="settings/profile" element={<AccountProfilePage />} />
             <Route path="settings/change-password" element={<ChangePasswordPage />} />

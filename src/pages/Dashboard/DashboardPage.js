@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -31,15 +31,13 @@ import {
   Speed,
   Assessment,
   ArrowForward,
-  CalendarToday,
-  VideoCall,
-  Group,
-  AccessTime,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import axios from 'axios';
+import config from '../../config/config';
 import AuthenticationService from '../../services/AuthenticationService';
 import webSocketService from '../../services/WebSocketService';
-import { getTodaysMeetings } from '../../data/meetingsData';
+import MeetingList from '../Conference/components/MeetingList';
 
 const MotionCard = motion(Card);
 const MotionBox = motion(Box);
@@ -48,6 +46,8 @@ const DashboardPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const fullName = AuthenticationService.getFullName();
+  const [meetings, setMeetings] = useState([]);
+  
   const stats = {
     totalCalls: 145,
     missedCalls: 12,
@@ -57,10 +57,12 @@ const DashboardPage = () => {
     contacts: 89,
   };
 
-  const selectedDate = new Date(2026, 1, 3); // Feb 3, 2026
-  const meetings = getTodaysMeetings();
+  const selectedDate = new Date();
 
   useEffect(() => {
+    // Load meetings
+    loadMeetings();
+    
     // Subscribe to real-time updates
     webSocketService.subscribeService(
       'dashboard-stats',
@@ -74,6 +76,45 @@ const DashboardPage = () => {
       webSocketService.unsubscribeService('dashboard-stats');
     };
   }, []);
+
+  const loadMeetings = async () => {
+    try {
+      const token = AuthenticationService.getAuthenticationToken();
+      console.log('Dashboard - Loading meetings with token:', token ? 'exists' : 'missing');
+      
+      const response = await axios.post(
+        `${config.api.services}conferenceRoom/listAll`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      console.log('Dashboard - API Response:', response);
+      
+      // Handle response structure: { status: "OK", data: { meetingList: [...] } }
+      if (response.data && response.data.data && response.data.data.meetingList) {
+        console.log('Dashboard - Setting meetings from response.data.data.meetingList:', response.data.data.meetingList);
+        setMeetings(response.data.data.meetingList);
+      } else if (response.data && response.data.meetingList) {
+        console.log('Dashboard - Setting meetings from response.data.meetingList:', response.data.meetingList);
+        setMeetings(response.data.meetingList);
+      } else {
+        console.log('Dashboard - No meetings found in response');
+        setMeetings([]);
+      }
+    } catch (error) {
+      console.error('Dashboard - Failed to load meetings:', error);
+      setMeetings([]);
+    }
+  };
+
+  const handleJoinMeeting = (meeting) => {
+    navigate('/conference');
+  };
 
   const statCards = [
     {
@@ -616,169 +657,18 @@ const DashboardPage = () => {
           {/* Calendar and Meetings - Right Column */}
           <Grid item xs={12} lg={3}>
             <Stack spacing={3}>
-              {/* Calendar Card */}
-              <MotionCard
+              {/* Today's Meetings using MeetingList Component */}
+              <MotionBox
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                onClick={() => navigate('/conference')}
-                sx={{
-                  borderRadius: 3,
-                  background: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.05)}, ${alpha(theme.palette.secondary.light, 0.05)})`,
-                  border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
-                  height: '100%',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: `0 8px 24px ${alpha(theme.palette.secondary.main, 0.25)}`,
-                    border: `1px solid ${theme.palette.secondary.main}`,
-                  },
-                }}
               >
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Avatar
-                        sx={{
-                          background: `linear-gradient(135deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`,
-                          mr: 2,
-                          width: 44,
-                          height: 44,
-                        }}
-                      >
-                        <CalendarToday />
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight={700}>
-                          Today's Schedule
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {selectedDate.toLocaleDateString('en-US', { 
-                            weekday: 'short', 
-                            month: 'short', 
-                            day: 'numeric' 
-                          })}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    <ArrowForward sx={{ color: theme.palette.secondary.main }} />
-                  </Box>
-
-                  <Divider sx={{ mb: 3 }} />
-
-                  {/* Meeting Count Badge */}
-                  <Box sx={{ mb: 3, textAlign: 'center' }}>
-                    <Badge
-                      badgeContent={meetings.length}
-                      color="secondary"
-                      sx={{
-                        '& .MuiBadge-badge': {
-                          fontSize: 14,
-                          height: 24,
-                          minWidth: 24,
-                          borderRadius: 2,
-                          fontWeight: 700,
-                        },
-                      }}
-                    >
-                      <Chip
-                        icon={<AccessTime />}
-                        label={`${meetings.length} Meetings`}
-                        sx={{
-                          px: 1.5,
-                          py: 2,
-                          fontSize: 13,
-                          fontWeight: 600,
-                          background: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.1)}, ${alpha(theme.palette.secondary.light, 0.1)})`,
-                          border: `1px solid ${alpha(theme.palette.secondary.main, 0.3)}`,
-                        }}
-                      />
-                    </Badge>
-                  </Box>
-
-                  {/* Meetings List */}
-                  <Stack spacing={1.5}>
-                    {meetings.map((meeting, index) => (
-                      <MotionBox
-                        key={meeting.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.8 + index * 0.1 }}
-                        whileHover={{
-                          scale: 1.02,
-                          transition: { duration: 0.2 },
-                        }}
-                        onClick={() => navigate('/conference')}
-                        sx={{
-                          p: 1.5,
-                          borderRadius: 2,
-                          bgcolor: theme.palette.mode === 'dark' 
-                            ? alpha(theme.palette.background.paper, 0.6)
-                            : 'white',
-                          border: `1px solid ${theme.palette.divider}`,
-                          cursor: 'pointer',
-                          transition: 'all 0.3s',
-                          '&:hover': {
-                            borderColor: theme.palette.secondary.main,
-                            boxShadow: theme.shadows[3],
-                            bgcolor: theme.palette.mode === 'dark'
-                              ? alpha(theme.palette.secondary.main, 0.15)
-                              : alpha(theme.palette.secondary.main, 0.02),
-                          },
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                          <Avatar
-                            sx={{
-                              width: 32,
-                              height: 32,
-                              bgcolor:
-                                meeting.type === 'video'
-                                  ? theme.palette.info.main
-                                  : meeting.type === 'call'
-                                  ? theme.palette.success.main
-                                  : theme.palette.warning.main,
-                            }}
-                          >
-                            {meeting.type === 'video' ? (
-                              <VideoCall sx={{ fontSize: 18 }} />
-                            ) : meeting.type === 'call' ? (
-                              <Call sx={{ fontSize: 18 }} />
-                            ) : (
-                              <Group sx={{ fontSize: 18 }} />
-                            )}
-                          </Avatar>
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant="subtitle2" fontWeight={700} noWrap gutterBottom>
-                              {meeting.title}
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.5 }}>
-                              <AccessTime sx={{ fontSize: 12, color: 'text.secondary' }} />
-                              <Typography variant="caption" color="text.secondary" noWrap>
-                                {meeting.time}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                •
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary" noWrap>
-                                {meeting.duration}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <People sx={{ fontSize: 12, color: 'text.secondary' }} />
-                              <Typography variant="caption" color="text.secondary" noWrap>
-                                {meeting.participants.slice(0, 2).join(', ')}
-                                {meeting.participants.length > 2 && ` +${meeting.participants.length - 2}`}
-                              </Typography>
-                            </Box>
-                          </Box>
-                        </Box>
-                      </MotionBox>
-                    ))}
-                  </Stack>
-                </CardContent>
-              </MotionCard>
+                <MeetingList 
+                  meetings={meetings} 
+                  onJoin={handleJoinMeeting}
+                  maxItems={5}
+                />
+              </MotionBox>
             </Stack>
           </Grid>
         </Grid>
