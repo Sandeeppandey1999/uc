@@ -52,7 +52,7 @@ function App() {
             <Route path="settings/profile" element={<AccountProfilePage />} />
             <Route path="settings/change-password" element={<ChangePasswordPage />} />
             <Route path="settings/preferences" element={<PreferencesPage />} />
-            <Route path="settings/conference" element={<ConferenceSettingsPage />} />
+            <Route path="conference-settings" element={<ConferenceSettingsPage />} />
             <Route path="settings/security" element={<div>Security Settings (Coming Soon)</div>} />
           </Route>
 

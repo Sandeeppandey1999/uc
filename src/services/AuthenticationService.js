@@ -23,6 +23,7 @@ class AuthenticationServiceClass {
       roles,
       menus,
       applications,
+      extension
     } = data;
 
     sessionStorage.setItem(this.getStorageKey('token'), token);
@@ -33,6 +34,7 @@ class AuthenticationServiceClass {
     sessionStorage.setItem(this.getStorageKey('roles'), JSON.stringify(roles || []));
     sessionStorage.setItem(this.getStorageKey('menus'), JSON.stringify(menus || []));
     sessionStorage.setItem(this.getStorageKey('applications'), JSON.stringify(applications || []));
+    sessionStorage.setItem(this.getStorageKey('extension'), data.extension || '');
     sessionStorage.setItem(this.getStorageKey('authenticated'), 'true');
   }
 
@@ -51,6 +53,10 @@ class AuthenticationServiceClass {
 
   getUserId() {
     return sessionStorage.getItem(this.getStorageKey('user-id'));
+  }
+
+  getExtension() {
+    return sessionStorage.getItem(this.getStorageKey('extension')) || '';
   }
 
   getUserName() {
@@ -122,6 +128,7 @@ class AuthenticationServiceClass {
       'roles',
       'menus',
       'applications',
+      'extension',
       'authenticated',
     ];
 

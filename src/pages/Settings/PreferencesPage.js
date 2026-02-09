@@ -76,9 +76,9 @@ const PreferencesPage = () => {
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+     <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto', background: muiTheme.palette.mode === 'dark' ? 'linear-gradient(135deg, #1a2035 0%, #1a2035 100%)' : 'linear-gradient(135deg, #f8f9fa 0%, #e0e7ff 100%)', borderRadius: 4, boxShadow: muiTheme.shadows[8] }}>
       {/* Page Header */}
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Preferences
         </Typography>
@@ -87,7 +87,7 @@ const PreferencesPage = () => {
         </Typography>
       </Box>
 
-      <Stack spacing={3}>
+      <Stack spacing={2.5}>
         {/* Theme Style Settings - Google vs Modern */}
         <MotionCard
           initial={{ opacity: 0, y: 20 }}
@@ -95,24 +95,27 @@ const PreferencesPage = () => {
           transition={{ delay: 0.05 }}
           sx={{
             background: muiTheme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-            boxShadow: muiTheme.shadows[4],
+              ? 'linear-gradient(135deg, #1a2035 0%, #1a2035 100%)'
+              : 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)',
+            boxShadow: muiTheme.shadows[8],
+            borderRadius: 3,
+            overflow: 'hidden',
           }}
         >
-          <CardContent sx={{ py: 2, px: 2.5 }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" mb={2}>
+          <CardContent sx={{ py: 1.5, px: 2 }}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
               <Box
                 sx={{
-                  p: 1,
-                  borderRadius: 1.5,
+                  p: 0.5,
+                  borderRadius: 1,
                   background: `linear-gradient(135deg, ${muiTheme.palette.secondary.main}, ${muiTheme.palette.secondary.dark})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  boxShadow: muiTheme.shadows[2],
                 }}
               >
-                <PaletteIcon sx={{ color: 'white', fontSize: 20 }} />
+                <PaletteIcon sx={{ color: 'white', fontSize: 16 }} />
               </Box>
               <Box>
                 <Typography variant="subtitle1" fontWeight={600}>
@@ -126,14 +129,14 @@ const PreferencesPage = () => {
 
             <FormControl component="fieldset" fullWidth>
               <RadioGroup value={themeStyle} onChange={handleThemeStyleChange}>
-                <Stack spacing={1.5} direction="row">
+                <Stack spacing={1} direction="row">
                   {/* Google Theme */}
                   <MotionPaper
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     elevation={themeStyle === 'google' ? 8 : 2}
                     sx={{
-                      p: 2,
+                      p: 1.2,
                       cursor: 'pointer',
                       flex: 1,
                       border: themeStyle === 'google' 
@@ -141,16 +144,17 @@ const PreferencesPage = () => {
                         : `2px solid transparent`,
                       transition: 'all 0.3s ease',
                       background: themeStyle === 'google'
-                        ? alpha(muiTheme.palette.primary.main, 0.1)
+                        ? alpha(muiTheme.palette.primary.main, 0.08)
                         : 'transparent',
+                      minWidth: 120,
                     }}
                     onClick={() => handleThemeStyleChange({ target: { value: 'google' } })}
                   >
                     <Stack spacing={1} alignItems="center">
                       <Box
                         sx={{
-                          p: 1.5,
-                          borderRadius: 1.5,
+                          p: 0.8,
+                          borderRadius: 1,
                           background: 'linear-gradient(135deg, #4285f4, #1a73e8)',
                           display: 'flex',
                         }}
@@ -158,7 +162,7 @@ const PreferencesPage = () => {
                         <Box
                           component="span"
                           sx={{
-                            fontSize: '1.5rem',
+                            fontSize: '1.1rem',
                             fontWeight: 700,
                             color: 'white',
                             fontFamily: '"Google Sans", sans-serif',
@@ -168,7 +172,7 @@ const PreferencesPage = () => {
                         </Box>
                       </Box>
                       <Box textAlign="center">
-                        <Typography variant="subtitle1" fontWeight={600}>
+                        <Typography variant="subtitle2" fontWeight={600}>
                           Google
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -185,11 +189,11 @@ const PreferencesPage = () => {
 
                   {/* Modern Theme */}
                   <MotionPaper
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     elevation={themeStyle === 'modern' ? 8 : 2}
                     sx={{
-                      p: 2,
+                      p: 1.2,
                       cursor: 'pointer',
                       flex: 1,
                       border: themeStyle === 'modern' 
@@ -197,16 +201,17 @@ const PreferencesPage = () => {
                         : `2px solid transparent`,
                       transition: 'all 0.3s ease',
                       background: themeStyle === 'modern'
-                        ? alpha(muiTheme.palette.secondary.main, 0.1)
+                        ? alpha(muiTheme.palette.secondary.main, 0.08)
                         : 'transparent',
+                      minWidth: 120,
                     }}
                     onClick={() => handleThemeStyleChange({ target: { value: 'modern' } })}
                   >
                     <Stack spacing={1} alignItems="center">
                       <Box
                         sx={{
-                          p: 1.5,
-                          borderRadius: 1.5,
+                          p: 0.8,
+                          borderRadius: 1,
                           background: 'linear-gradient(135deg, #667eea, #764ba2)',
                           display: 'flex',
                         }}
@@ -214,7 +219,7 @@ const PreferencesPage = () => {
                         <Box
                           component="span"
                           sx={{
-                            fontSize: '1.5rem',
+                            fontSize: '1.1rem',
                             fontWeight: 700,
                             color: 'white',
                             fontFamily: '"Inter", sans-serif',
@@ -224,7 +229,7 @@ const PreferencesPage = () => {
                         </Box>
                       </Box>
                       <Box textAlign="center">
-                        <Typography variant="subtitle1" fontWeight={600}>
+                        <Typography variant="subtitle2" fontWeight={600}>
                           Modern
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
@@ -251,24 +256,27 @@ const PreferencesPage = () => {
           transition={{ delay: 0.1 }}
           sx={{
             background: muiTheme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-            boxShadow: muiTheme.shadows[4],
+              ? 'linear-gradient(135deg, #232946 0%, #1a2035 100%)'
+              : 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)',
+            boxShadow: muiTheme.shadows[8],
+            borderRadius: 3,
+            overflow: 'hidden',
           }}
         >
-          <CardContent>
-            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
+          <CardContent sx={{ py: 1.5, px: 2 }}>
+            <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
               <Box
                 sx={{
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: 0.7,
+                  borderRadius: 1,
                   background: `linear-gradient(135deg, ${muiTheme.palette.primary.main}, ${muiTheme.palette.primary.dark})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  boxShadow: muiTheme.shadows[2],
                 }}
               >
-                {darkMode ? <DarkModeIcon sx={{ color: 'white', fontSize: 28 }} /> : <LightModeIcon sx={{ color: 'white', fontSize: 28 }} />}
+                {darkMode ? <DarkModeIcon sx={{ color: 'white', fontSize: 18 }} /> : <LightModeIcon sx={{ color: 'white', fontSize: 18 }} />}
               </Box>
               <Box>
                 <Typography variant="h6" fontWeight={600}>
@@ -282,45 +290,46 @@ const PreferencesPage = () => {
 
             <FormControl component="fieldset" fullWidth>
               <RadioGroup value={themeMode} onChange={handleThemeChange}>
-                <Stack spacing={2}>
+                <Stack spacing={1}>
                   {/* Light Theme */}
                   <MotionPaper
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     elevation={themeMode === 'light' ? 8 : 2}
                     sx={{
-                      p: 2,
+                      p: 1.2,
                       cursor: 'pointer',
                       border: themeMode === 'light' 
                         ? `2px solid ${muiTheme.palette.primary.main}` 
                         : `2px solid transparent`,
                       transition: 'all 0.3s ease',
                       background: themeMode === 'light'
-                        ? alpha(muiTheme.palette.primary.main, 0.1)
+                        ? alpha(muiTheme.palette.primary.main, 0.08)
                         : 'transparent',
+                      minWidth: 120,
                     }}
                     onClick={() => handleThemeChange({ target: { value: 'light' } })}
                   >
                     <FormControlLabel
                       value="light"
-                      control={<Radio />}
+                      control={<Radio size="small" />}
                       label={
-                        <Stack direction="row" spacing={2} alignItems="center">
+                        <Stack direction="row" spacing={1} alignItems="center">
                           <Box
                             sx={{
-                              p: 1,
+                              p: 0.7,
                               borderRadius: 1,
                               background: 'linear-gradient(135deg, #ffd700, #ffa500)',
                               display: 'flex',
                             }}
                           >
-                            <LightModeIcon sx={{ color: 'white' }} />
+                            <LightModeIcon sx={{ color: 'white', fontSize: 16 }} />
                           </Box>
                           <Box>
-                            <Typography variant="subtitle1" fontWeight={600}>
+                            <Typography variant="subtitle2" fontWeight={600}>
                               Light Mode
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="caption" color="text.secondary">
                               Bright and clean interface
                             </Typography>
                           </Box>
@@ -332,42 +341,43 @@ const PreferencesPage = () => {
 
                   {/* Dark Theme */}
                   <MotionPaper
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
                     elevation={themeMode === 'dark' ? 8 : 2}
                     sx={{
-                      p: 2,
+                      p: 1.2,
                       cursor: 'pointer',
                       border: themeMode === 'dark' 
                         ? `2px solid ${muiTheme.palette.primary.main}` 
                         : `2px solid transparent`,
                       transition: 'all 0.3s ease',
                       background: themeMode === 'dark'
-                        ? alpha(muiTheme.palette.primary.main, 0.1)
+                        ? alpha(muiTheme.palette.primary.main, 0.08)
                         : 'transparent',
+                      minWidth: 120,
                     }}
                     onClick={() => handleThemeChange({ target: { value: 'dark' } })}
                   >
                     <FormControlLabel
                       value="dark"
-                      control={<Radio />}
+                      control={<Radio size="small" />}
                       label={
-                        <Stack direction="row" spacing={2} alignItems="center">
+                        <Stack direction="row" spacing={1} alignItems="center">
                           <Box
                             sx={{
-                              p: 1,
+                              p: 0.7,
                               borderRadius: 1,
                               background: 'linear-gradient(135deg, #4a5568, #2d3748)',
                               display: 'flex',
                             }}
                           >
-                            <DarkModeIcon sx={{ color: 'white' }} />
+                            <DarkModeIcon sx={{ color: 'white', fontSize: 16 }} />
                           </Box>
                           <Box>
-                            <Typography variant="subtitle1" fontWeight={600}>
+                            <Typography variant="subtitle2" fontWeight={600}>
                               Dark Mode
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="caption" color="text.secondary">
                               Easy on the eyes in low light
                             </Typography>
                           </Box>
@@ -377,52 +387,7 @@ const PreferencesPage = () => {
                     />
                   </MotionPaper>
 
-                  {/* Auto Theme */}
-                  <MotionPaper
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    elevation={themeMode === 'auto' ? 8 : 2}
-                    sx={{
-                      p: 2,
-                      cursor: 'pointer',
-                      border: themeMode === 'auto' 
-                        ? `2px solid ${muiTheme.palette.primary.main}` 
-                        : `2px solid transparent`,
-                      transition: 'all 0.3s ease',
-                      background: themeMode === 'auto'
-                        ? alpha(muiTheme.palette.primary.main, 0.1)
-                        : 'transparent',
-                    }}
-                    onClick={() => handleThemeChange({ target: { value: 'auto' } })}
-                  >
-                    <FormControlLabel
-                      value="auto"
-                      control={<Radio />}
-                      label={
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <Box
-                            sx={{
-                              p: 1,
-                              borderRadius: 1,
-                              background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                              display: 'flex',
-                            }}
-                          >
-                            <AutoModeIcon sx={{ color: 'white' }} />
-                          </Box>
-                          <Box>
-                            <Typography variant="subtitle1" fontWeight={600}>
-                              Auto Mode
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Follows system preferences
-                            </Typography>
-                          </Box>
-                        </Stack>
-                      }
-                      sx={{ m: 0, width: '100%' }}
-                    />
-                  </MotionPaper>
+             
                 </Stack>
               </RadioGroup>
             </FormControl>
@@ -436,24 +401,27 @@ const PreferencesPage = () => {
           transition={{ delay: 0.2 }}
           sx={{
             background: muiTheme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-            boxShadow: muiTheme.shadows[4],
+              ? 'linear-gradient(135deg, #232946 0%, #1a2035 100%)'
+              : 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)',
+            boxShadow: muiTheme.shadows[8],
+            borderRadius: 3,
+            overflow: 'hidden',
           }}
         >
-          <CardContent>
-            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
+          <CardContent sx={{ py: 1.5, px: 2 }}>
+            <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
               <Box
                 sx={{
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: 0.7,
+                  borderRadius: 1,
                   background: `linear-gradient(135deg, ${muiTheme.palette.info.main}, ${muiTheme.palette.info.dark})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  boxShadow: muiTheme.shadows[2],
                 }}
               >
-                <NotificationsIcon sx={{ color: 'white', fontSize: 28 }} />
+                <NotificationsIcon sx={{ color: 'white', fontSize: 18 }} />
               </Box>
               <Box>
                 <Typography variant="h6" fontWeight={600}>
@@ -576,24 +544,27 @@ const PreferencesPage = () => {
           transition={{ delay: 0.3 }}
           sx={{
             background: muiTheme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
-            boxShadow: muiTheme.shadows[4],
+              ? 'linear-gradient(135deg, #232946 0%, #1a2035 100%)'
+              : 'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)',
+            boxShadow: muiTheme.shadows[8],
+            borderRadius: 3,
+            overflow: 'hidden',
           }}
         >
-          <CardContent>
-            <Stack direction="row" spacing={2} alignItems="center" mb={3}>
+          <CardContent sx={{ py: 1.5, px: 2 }}>
+            <Stack direction="row" spacing={1.5} alignItems="center" mb={1.5}>
               <Box
                 sx={{
-                  p: 1.5,
-                  borderRadius: 2,
+                  p: 0.7,
+                  borderRadius: 1,
                   background: `linear-gradient(135deg, ${muiTheme.palette.success.main}, ${muiTheme.palette.success.dark})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  boxShadow: muiTheme.shadows[2],
                 }}
               >
-                <VolumeIcon sx={{ color: 'white', fontSize: 28 }} />
+                <VolumeIcon sx={{ color: 'white', fontSize: 18 }} />
               </Box>
               <Box>
                 <Typography variant="h6" fontWeight={600}>

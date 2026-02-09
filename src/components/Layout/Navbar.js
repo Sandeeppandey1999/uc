@@ -42,6 +42,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme as useCustomTheme } from '../../theme/ThemeProvider';
+import AuthenticationService from '../../services/AuthenticationService';
 
 const MotionPaper = motion(Paper);
 
@@ -50,7 +51,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
   const { darkMode, toggleDarkMode } = useCustomTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -58,7 +59,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
   const searchTimeoutRef = useRef(null);
-
+  const fullName = AuthenticationService.getFullName();
   // Generate breadcrumbs from current path
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
@@ -79,11 +80,11 @@ const Navbar = ({ onMenuClick, collapsed }) => {
     }
 
     setSearching(true);
-    
+
     try {
       // Simulate API call with mock data
       await new Promise(resolve => setTimeout(resolve, 300));
-      
+
       const mockResults = [
         {
           id: 1,
@@ -201,8 +202,8 @@ const Navbar = ({ onMenuClick, collapsed }) => {
           <IconButton
             edge="start"
             onClick={onMenuClick}
-            sx={{ 
-              mr: 2, 
+            sx={{
+              mr: 2,
               display: { md: 'none' },
               color: theme.palette.text.primary,
               '&:hover': {
@@ -284,17 +285,17 @@ const Navbar = ({ onMenuClick, collapsed }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={handleSearchFocus}
-                  sx={{ 
-                    flex: 1, 
+                  sx={{
+                    flex: 1,
                     fontSize: '0.9rem',
                     color: theme.palette.text.primary,
                   }}
                 />
                 {searchQuery && (
-                  <IconButton 
-                    size="small" 
+                  <IconButton
+                    size="small"
                     onClick={handleClearSearch}
-                    sx={{ 
+                    sx={{
                       color: theme.palette.text.secondary,
                       '&:hover': {
                         color: theme.palette.text.primary,
@@ -384,9 +385,9 @@ const Navbar = ({ onMenuClick, collapsed }) => {
           <Box sx={{ display: 'flex', gap: 1 }}>
             {/* Theme Toggle */}
             <Tooltip title={darkMode ? 'Light Mode' : 'Dark Mode'}>
-              <IconButton 
+              <IconButton
                 onClick={toggleDarkMode}
-                sx={{ 
+                sx={{
                   color: theme.palette.text.primary,
                   '&:hover': {
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -401,7 +402,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
             <Tooltip title="Notifications">
               <IconButton
                 onClick={(e) => setNotificationAnchor(e.currentTarget)}
-                sx={{ 
+                sx={{
                   color: theme.palette.text.primary,
                   '&:hover': {
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -418,7 +419,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
             <Tooltip title="Profile">
               <IconButton
                 onClick={(e) => setProfileAnchor(e.currentTarget)}
-                sx={{ 
+                sx={{
                   p: 0.5,
                   '&:hover': {
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -432,7 +433,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
                     background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                   }}
                 >
-                  U
+                  {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
                 </Avatar>
               </IconButton>
             </Tooltip>
@@ -481,27 +482,23 @@ const Navbar = ({ onMenuClick, collapsed }) => {
         open={Boolean(profileAnchor)}
         onClose={() => setProfileAnchor(null)}
       >
-        <MenuItem onClick={() => navigate('/settings/profile')}>
+        <MenuItem onClick={() => { setProfileAnchor(null); navigate('/settings/profile'); }}>
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => navigate('/settings/change-password')}>
+        <MenuItem onClick={() => { setProfileAnchor(null); navigate('/settings/change-password'); }}>
           <ListItemIcon>
             <VpnKey fontSize="small" />
           </ListItemIcon>
           <ListItemText>Change Password</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => navigate('/settings/preferences')}>
+        <MenuItem onClick={() => { setProfileAnchor(null); navigate('/settings/preferences'); }}>
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Preferences</ListItemText>
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={() => navigate('/help')}>
-          Help
         </MenuItem>
       </Menu>
     </>

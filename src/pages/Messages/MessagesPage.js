@@ -289,7 +289,7 @@ const MessagesPage = () => {
               flexDirection: 'column',
               borderRadius: 0,
               background: theme.palette.mode === 'dark'
-                ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+                ? 'linear-gradient(135deg, #1a2035 0%, #1a2035 100%)'
                 : 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
             }}
           >
@@ -448,7 +448,7 @@ const MessagesPage = () => {
                 flexDirection: 'column',
                 borderRadius: 0,
                 background: theme.palette.mode === 'dark'
-                  ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+                  ? 'linear-gradient(135deg, #1a2035 0%, #1a2035 100%)'
                   : 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
               }}
             >
@@ -553,7 +553,7 @@ const MessagesPage = () => {
                           background: message.sent
                             ? `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.primary.dark})`
                             : theme.palette.mode === 'dark'
-                            ? '#2d2d2d'
+                            ? '#28304b'
                             : '#f5f5f5',
                           color: message.sent ? 'white' : 'text.primary',
                         }}
@@ -652,7 +652,7 @@ const MessagesPage = () => {
                 justifyContent: 'center',
                 borderRadius: 0,
                 background: theme.palette.mode === 'dark'
-                  ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+                  ? 'linear-gradient(135deg, #1a2035 0%, #1a2035 100%)'
                   : 'linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%)',
               }}
             >

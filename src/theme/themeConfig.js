@@ -184,8 +184,10 @@ export const googleDarkTheme = createTheme({
       dark: '#5bb974',
     },
     background: {
-      default: '#1f1f1f',
-      paper: '#292929',
+      default: '#1a2035',
+      paper: '#1a2035',
+      // default: '#1f1f1f',
+      // paper: '#292929',
     },
     text: {
       primary: '#e8eaed',
@@ -344,8 +346,10 @@ export const modernDarkTheme = createTheme({
       contrastText: '#fff',
     },
     background: {
-      default: '#1a1d21',
-      paper: '#222529',
+      // main: "#344767",
+      // focus: "#2c3c58",
+      default: '#1a2035',
+      paper: '#1a2035',
     },
     text: {
       primary: '#d1d2d3',

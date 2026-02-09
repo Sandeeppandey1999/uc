@@ -46,9 +46,11 @@ const DashboardLayout = () => {
           minHeight: '100vh',
           height: '100vh',
           overflow: 'auto',
+           // main: "#344767",
+      // focus: "#344767",
           background: theme => 
             theme.palette.mode === 'dark'
-              ? 'linear-gradient(180deg, #1f1f1f 0%, #1a1a1a 100%)'
+              ? 'linear-gradient(180deg, #1a2035 0%, #1a2035 100%)'
               : 'linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%)',
         }}
       >
