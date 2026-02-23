@@ -22,9 +22,11 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Button,
 } from '@mui/material';
 import {
   Search,
+  Refresh,
   Call,
   Message,
   VideoCall,
@@ -237,6 +239,48 @@ const ContactsPage = () => {
                     {totalRecords} Total Contacts
                   </Typography>
                 </Box>
+                <Button
+                  variant="contained"
+                  startIcon={<Refresh />}
+                  onClick={fetchContacts}
+                  disabled={loading}
+                  sx={{
+                    borderRadius: 999,
+                    px: 2.5,
+                    py: 1,
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    letterSpacing: 0.2,
+                    border: `1px solid ${alpha(theme.palette.common.white, theme.palette.mode === 'dark' ? 0.24 : 0.38)}`,
+                    backdropFilter: 'blur(6px)',
+                    boxShadow: theme.shadows[4],
+                    bgcolor: theme.palette.mode === 'dark'
+                      ? alpha(theme.palette.background.paper, 0.28)
+                      : alpha(theme.palette.background.paper, 0.94),
+                    color: theme.palette.mode === 'dark'
+                      ? theme.palette.common.white
+                      : theme.palette.primary.dark,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      bgcolor: theme.palette.mode === 'dark'
+                        ? alpha(theme.palette.background.paper, 0.4)
+                        : alpha(theme.palette.background.paper, 0.99),
+                      transform: 'translateY(-2px)',
+                      boxShadow: theme.shadows[8],
+                    },
+                    '&.Mui-disabled': {
+                      bgcolor: theme.palette.mode === 'dark'
+                        ? alpha(theme.palette.background.paper, 0.16)
+                        : alpha(theme.palette.background.paper, 0.7),
+                      color: alpha(
+                        theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.primary.dark,
+                        0.6
+                      ),
+                    },
+                  }}
+                >
+                  Refresh
+                </Button>
               </Box>
             </Box>
           </Paper>

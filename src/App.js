@@ -17,6 +17,7 @@ import ConferencePage from './pages/Conference/ConferencePage';
 import FaxPage from './pages/Fax/FaxPage';
 import BroadcastsPage from './pages/Broadcasts/BroadcastsPage';
 import VoicemailPage from './pages/Voicemail/VoicemailPage';
+import PersonalContactsPage from './pages/PersonalContacts/PersonalContactsPage';
 import './App.css';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
             <Route path="calls/recent" element={<CallsPage />} />
             <Route path="calls/history" element={<CallsPage />} />
             <Route path="contacts" element={<ContactsPage />} />
+            <Route path="personal-contacts" element={<PersonalContactsPage />} />
             <Route path="conference" element={<ConferencePage />} />
             <Route path="fax" element={<FaxPage />} />
             <Route path="voicemail" element={<VoicemailPage />} />

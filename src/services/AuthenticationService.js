@@ -7,34 +7,89 @@ class AuthenticationServiceClass {
     this.hostname = window.location.hostname;
   }
 
+  normalizeText(value) {
+    if (value === null || value === undefined) return '';
+    const text = String(value).trim();
+    if (!text || text.toLowerCase() === 'undefined' || text.toLowerCase() === 'null') {
+      return '';
+    }
+    return text;
+  }
+
   // Storage key generators
   getStorageKey(key) {
-    return `${this.hostname}-uc-${key}`;
+    const legacyKeyMap = {
+      token: 'Token',
+      'refresh-token': 'Refresh-Token',
+      'user-id': 'User-Id',
+      username: 'UserName',
+      fullname: 'FullName',
+      description: 'Description',
+      'display-name': 'Display-Name',
+      roles: 'Roles',
+      menus: 'Menus',
+      applications: 'Apps',
+      extension: 'Extension',
+      sip: 'SIP',
+      'rlu-ip': 'RLUIp',
+      'rlu-code': 'RLUCode',
+      'password-complexity': 'PasswordComplexity',
+      'ideal-timeout': 'Ideal-Timeout',
+      authenticated: 'Authenticated',
+      user: 'User',
+    };
+
+    const mapped = legacyKeyMap[key] || key;
+    return `${this.hostname}-coral-X-${mapped}`;
   }
 
   // Token Management
   storeAuthenticationDetails(data) {
+    const userName = this.normalizeText(data.userName || data.username);
+    const fullName = this.normalizeText(data.fullName);
+    const description = this.normalizeText(data.description);
+    const displayName = description || fullName || userName;
+    const roles = Array.isArray(data.roles)
+      ? data.roles
+      : this.normalizeText(data.roles)
+        ? [data.roles]
+        : [];
+    const menus = data.menus || data.menu || [];
+    const applications = data.applications || data.coralApplication || [];
+    const extension = this.normalizeText(data.extension);
+    const sipDetails = {
+      extensionName: this.normalizeText(data.extensionName),
+      extension,
+      sipPassword: this.normalizeText(data.sipPassword),
+    };
+
     const {
       token,
       refreshToken,
       userId,
-      userName,
-      fullName,
-      roles,
-      menus,
-      applications,
-      extension
+      rluIp,
+      rluCode,
+      pwdComplication,
+      idealTimeout
     } = data;
 
     sessionStorage.setItem(this.getStorageKey('token'), token);
     sessionStorage.setItem(this.getStorageKey('refresh-token'), refreshToken);
     sessionStorage.setItem(this.getStorageKey('user-id'), userId);
+    sessionStorage.setItem(this.getStorageKey('user'), userName);
     sessionStorage.setItem(this.getStorageKey('username'), userName);
     sessionStorage.setItem(this.getStorageKey('fullname'), fullName);
+    sessionStorage.setItem(this.getStorageKey('description'), description);
+    sessionStorage.setItem(this.getStorageKey('display-name'), displayName);
     sessionStorage.setItem(this.getStorageKey('roles'), JSON.stringify(roles || []));
     sessionStorage.setItem(this.getStorageKey('menus'), JSON.stringify(menus || []));
     sessionStorage.setItem(this.getStorageKey('applications'), JSON.stringify(applications || []));
-    sessionStorage.setItem(this.getStorageKey('extension'), data.extension || '');
+    sessionStorage.setItem(this.getStorageKey('extension'), extension);
+    sessionStorage.setItem(this.getStorageKey('sip'), JSON.stringify(sipDetails));
+    sessionStorage.setItem(this.getStorageKey('rlu-ip'), this.normalizeText(rluIp));
+    sessionStorage.setItem(this.getStorageKey('rlu-code'), this.normalizeText(rluCode));
+    sessionStorage.setItem(this.getStorageKey('password-complexity'), this.normalizeText(pwdComplication));
+    sessionStorage.setItem(this.getStorageKey('ideal-timeout'), this.normalizeText(idealTimeout));
     sessionStorage.setItem(this.getStorageKey('authenticated'), 'true');
   }
 
@@ -56,15 +111,41 @@ class AuthenticationServiceClass {
   }
 
   getExtension() {
+    const storedSIP = sessionStorage.getItem(this.getStorageKey('sip'));
+    if (storedSIP) {
+      try {
+        const parsed = JSON.parse(storedSIP);
+        if (parsed?.extension) {
+          return parsed.extension;
+        }
+      } catch {
+      }
+    }
+
     return sessionStorage.getItem(this.getStorageKey('extension')) || '';
   }
 
   getUserName() {
-    return sessionStorage.getItem(this.getStorageKey('username'));
+    return this.normalizeText(sessionStorage.getItem(this.getStorageKey('username')));
   }
 
   getFullName() {
-    return sessionStorage.getItem(this.getStorageKey('fullname')) || '';
+    return this.normalizeText(sessionStorage.getItem(this.getStorageKey('fullname')));
+  }
+
+  getDescription() {
+    return this.normalizeText(sessionStorage.getItem(this.getStorageKey('description')));
+  }
+
+  getDisplayName() {
+    const storedDisplayName = this.normalizeText(
+      sessionStorage.getItem(this.getStorageKey('display-name'))
+    );
+    if (storedDisplayName) {
+      return storedDisplayName;
+    }
+
+    return this.getDescription() || this.getFullName() || this.getUserName() || 'User';
   }
 
   getRoles() {
@@ -123,12 +204,20 @@ class AuthenticationServiceClass {
       'token',
       'refresh-token',
       'user-id',
+      'user',
       'username',
       'fullname',
+      'description',
+      'display-name',
       'roles',
       'menus',
       'applications',
       'extension',
+      'sip',
+      'rlu-ip',
+      'rlu-code',
+      'password-complexity',
+      'ideal-timeout',
       'authenticated',
     ];
 

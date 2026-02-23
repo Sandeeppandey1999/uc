@@ -59,7 +59,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
   const [notificationAnchor, setNotificationAnchor] = useState(null);
   const [profileAnchor, setProfileAnchor] = useState(null);
   const searchTimeoutRef = useRef(null);
-  const fullName = AuthenticationService.getFullName();
+  const displayName = AuthenticationService.getDisplayName();
   // Generate breadcrumbs from current path
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
@@ -433,7 +433,7 @@ const Navbar = ({ onMenuClick, collapsed }) => {
                     background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                   }}
                 >
-                  {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+                  {displayName ? displayName.charAt(0).toUpperCase() : 'U'}
                 </Avatar>
               </IconButton>
             </Tooltip>

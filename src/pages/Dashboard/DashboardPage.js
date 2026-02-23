@@ -16,13 +16,13 @@ import {
   Paper,
   Divider,
   Button,
-  Badge,
 } from '@mui/material';
 import {
   TrendingUp,
   Call,
   Message,
   People,
+  Person,
   PhoneInTalk,
   PhoneMissed,
   PhoneForwarded,
@@ -45,8 +45,10 @@ const MotionBox = motion(Box);
 const DashboardPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const fullName = AuthenticationService.getFullName();
+  const displayName = AuthenticationService.getDisplayName();
   const [meetings, setMeetings] = useState([]);
+  const [contactsCount, setContactsCount] = useState(0);
+  const [personalContactsCount, setPersonalContactsCount] = useState(0);
   
   const stats = {
     totalCalls: 145,
@@ -57,11 +59,10 @@ const DashboardPage = () => {
     contacts: 89,
   };
 
-  const selectedDate = new Date();
-
   useEffect(() => {
     // Load meetings
     loadMeetings();
+    loadContactCounts();
     
     // Subscribe to real-time updates
     webSocketService.subscribeService(
@@ -112,6 +113,65 @@ const DashboardPage = () => {
     }
   };
 
+  const loadContactCounts = async () => {
+    try {
+      const token = AuthenticationService.getAuthenticationToken();
+
+      const [contactsResponse, personalContactsResponse] = await Promise.all([
+        axios.post(
+          `${config.api.services}uc/phoneBook/list`,
+          {
+            currentPage: 0,
+            pageSize: 1,
+            sortDirection: 'desc',
+            sortBy: 'name',
+            search: '',
+            sortDataType: 'string',
+            advancedFilters: [],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+        axios.post(
+          `${config.api.services}ownPhoneBook/list`,
+          {
+            currentPage: 0,
+            pageSize: 1,
+            sortDirection: 'asc',
+            sortBy: 'id',
+            search: '',
+            sortDataType: 'integer',
+            advancedFilters: [],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ),
+      ]);
+
+      setContactsCount(
+        typeof contactsResponse?.data?.data?.totalRecords === 'number'
+          ? contactsResponse.data.data.totalRecords
+          : 0
+      );
+      setPersonalContactsCount(
+        typeof personalContactsResponse?.data?.data?.totalRecords === 'number'
+          ? personalContactsResponse.data.data.totalRecords
+          : 0
+      );
+    } catch (error) {
+      setContactsCount(0);
+      setPersonalContactsCount(0);
+    }
+  };
+
   const handleJoinMeeting = (meeting) => {
     navigate('/conference');
   };
@@ -159,11 +219,21 @@ const DashboardPage = () => {
     },
     {
       title: 'Contacts',
-      value: stats.contacts,
+      value: contactsCount,
       change: '+3%',
       icon: <People />,
       color: theme.palette.secondary.main,
       bgGradient: `linear-gradient(135deg, ${theme.palette.secondary.main}, ${theme.palette.secondary.dark})`,
+      path: '/contacts',
+    },
+    {
+      title: 'Personal Contacts',
+      value: personalContactsCount,
+      change: 'Live',
+      icon: <Person />,
+      color: theme.palette.info.main,
+      bgGradient: `linear-gradient(135deg, ${theme.palette.info.main}, ${theme.palette.info.dark})`,
+      path: '/personal-contacts',
     },
   ];
 
@@ -262,7 +332,7 @@ const DashboardPage = () => {
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                 <Box>
                   <Typography variant="h3" fontWeight={700} gutterBottom>
-                    Welcome back, {fullName || 'User'}! 👋
+                    Welcome back, {displayName || 'User'}! 👋
                   </Typography>
                   <Typography variant="h6" sx={{ opacity: 0.9 }}>
                     Here's what's happening with your communications today.
@@ -311,6 +381,11 @@ const DashboardPage = () => {
                   scale: 1.05,
                   boxShadow: theme.shadows[12],
                 }}
+                onClick={() => {
+                  if (card.path) {
+                    navigate(card.path);
+                  }
+                }}
                 sx={{
                   position: 'relative',
                   overflow: 'hidden',
@@ -318,6 +393,7 @@ const DashboardPage = () => {
                   height: '100%',
                   bgcolor: theme.palette.mode === 'dark' ? 'background.paper' : 'white',
                   border: theme.palette.mode === 'dark' ? `1px solid ${alpha(card.color, 0.3)}` : 'none',
+                  cursor: card.path ? 'pointer' : 'default',
                 }}
               >
                 <Box

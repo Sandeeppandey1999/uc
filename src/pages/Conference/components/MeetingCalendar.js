@@ -83,21 +83,57 @@ const MeetingCalendar = ({
     onEventClick && onEventClick(info.event.extendedProps);
   };
 
-  const handleEventDrop = (info) => {
-    const updatedMeeting = {
-      ...info.event.extendedProps,
-      date: info.event.start,
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTime = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  const buildUpdatedMeeting = (info) => {
+    const currentView = info.view?.type;
+    const start = info.event.start;
+    const end = info.event.end || start;
+    const originalMeeting = info.event.extendedProps;
+
+    if (!start) {
+      return originalMeeting;
+    }
+
+    // Day view: update only times, keep original scheduled dates
+    if (currentView === 'timeGridDay') {
+      return {
+        ...originalMeeting,
+        meetingScheduledDate: originalMeeting.meetingScheduledDate,
+        scheduledToDate: originalMeeting.scheduledToDate || originalMeeting.meetingScheduledDate,
+        fromTime: formatTime(start),
+        toTime: formatTime(end),
+      };
+    }
+
+    // Month/other views: update both dates and times from dragged event position
+    return {
+      ...originalMeeting,
+      meetingScheduledDate: formatDate(start),
+      scheduledToDate: formatDate(end),
+      fromTime: formatTime(start),
+      toTime: formatTime(end),
     };
+  };
+
+  const handleEventDrop = (info) => {
+    const updatedMeeting = buildUpdatedMeeting(info);
     onEventDrop && onEventDrop(updatedMeeting);
   };
 
   const handleEventResize = (info) => {
-    const duration = Math.round((info.event.end - info.event.start) / 60000);
-    const updatedMeeting = {
-      ...info.event.extendedProps,
-      date: info.event.start,
-      duration,
-    };
+    const updatedMeeting = buildUpdatedMeeting(info);
     onEventResize && onEventResize(updatedMeeting);
   };
 

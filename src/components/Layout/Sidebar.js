@@ -21,6 +21,7 @@ import {
   Message,
   Call,
   People,
+  Contacts,
   Settings,
   Logout,
   ExpandLess,
@@ -45,7 +46,7 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
   const [expandedItems, setExpandedItems] = useState({});
   const location = useLocation();
 
-  const fullName = AuthenticationService.getFullName();
+  const displayName = AuthenticationService.getDisplayName();
   const username = AuthenticationService.getUserName();
   const roles = AuthenticationService.getRoles();
   const extension = AuthenticationService.getExtension();
@@ -74,6 +75,12 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
       title: 'Contacts',
       icon: <People />,
       path: '/contacts',
+      roles: [],
+    },
+    {
+      title: 'Personal Contacts',
+      icon: <Contacts />,
+      path: '/personal-contacts',
       roles: [],
     },
     {
@@ -207,12 +214,12 @@ const Sidebar = ({ open, onClose, collapsed, onToggleCollapse }) => {
             boxShadow: theme.shadows[4],
           }}
         >
-          {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+          {displayName ? displayName.charAt(0).toUpperCase() : 'U'}
         </Avatar>
         {/* {!collapsed && ( */}
         <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: collapsed ? 'center' : 'flex-start' }}>
           <Typography variant="subtitle1" fontWeight={600} noWrap>
-            {fullName || 'User'}
+            {displayName || username || 'User'}
           </Typography>
           {/* <Typography variant="caption" color="text.secondary" noWrap>
               @{username}
